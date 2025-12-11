@@ -1,8 +1,8 @@
 .PHONY: all clean size
-.PHONY: build-go build-go-direct build-bun build-bun-direct build-rust build-rust-direct build-c build-c-direct build-deno build-deno-direct
-.PHONY: run-go run-go-direct run-bun run-bun-direct run-rust run-rust-direct run-c run-c-direct run-deno run-deno-direct
+.PHONY: build-go build-go-direct build-bun build-bun-direct build-rust build-rust-direct build-c build-c-direct build-deno build-deno-direct build-d build-d-direct
+.PHONY: run-go run-go-direct run-bun run-bun-direct run-rust run-rust-direct run-c run-c-direct run-deno run-deno-direct run-d run-d-direct
 
-all: build-go build-go-direct build-bun build-bun-direct build-rust build-rust-direct build-c build-c-direct build-deno build-deno-direct
+all: build-go build-go-direct build-bun build-bun-direct build-rust build-rust-direct build-c build-c-direct build-deno build-deno-direct build-d build-d-direct
 
 build-go:
 	cd go && go build -o hello main.go
@@ -34,8 +34,14 @@ build-deno:
 build-deno-direct:
 	cd deno && deno compile -o hello-direct direct-stdout.ts
 
+build-d:
+	cd d && ldc2 -of=hello main.d
+
+build-d-direct:
+	cd d && ldc2 -of=hello-direct direct-stdout.d
+
 clean:
-	rm -f go/hello go/hello-direct bun/hello bun/hello-direct rust/hello rust/hello-direct c/hello c/hello-direct deno/hello deno/hello-direct
+	rm -f go/hello go/hello-direct bun/hello bun/hello-direct rust/hello rust/hello-direct c/hello c/hello-direct deno/hello deno/hello-direct d/hello d/hello-direct
 
 run-go: build-go
 	./go/hello
@@ -67,6 +73,12 @@ run-deno: build-deno
 run-deno-direct: build-deno-direct
 	./deno/hello-direct
 
+run-d: build-d
+	./d/hello
+
+run-d-direct: build-d-direct
+	./d/hello-direct
+
 size: all
 	@echo "=== Binary Size Comparison ==="
 	@printf "Go:          " && ls -lh go/hello | awk '{print $$5}'
@@ -79,3 +91,5 @@ size: all
 	@printf "C(direct):   " && ls -lh c/hello-direct | awk '{print $$5}'
 	@printf "Deno:        " && ls -lh deno/hello | awk '{print $$5}'
 	@printf "Deno(direct):" && ls -lh deno/hello-direct | awk '{print $$5}'
+	@printf "D:           " && ls -lh d/hello | awk '{print $$5}'
+	@printf "D:           " && ls -lh d/hello-direct | awk '{print $$5}'
